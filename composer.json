@@ -1,4 +1,6 @@
 {
+	"name": "plugins/sensei-course-progress",
+	"type": "wordpress-plugin",
 	"require-dev": {
 		"apigen/apigen": "*",
 		"dealerdirect/phpcodesniffer-composer-installer": "0.5.0",
@@ -6,5 +8,9 @@
 		"phpcompatibility/phpcompatibility-wp": "2.1.0",
 		"squizlabs/php_codesniffer": "3.5.3",
 		"wp-coding-standards/wpcs": "2.2.0"
+	},
+	"scripts": {
+		"deploy": "dep deploy -o application=$(composer config name) cxl.com",
+		"rollback": "dep rollback -o application=$(composer config name) cxl.com"
 	}
 }
