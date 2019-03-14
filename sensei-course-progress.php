@@ -23,12 +23,6 @@ define( 'SENSEI_COURSE_PROGRESS_VERSION', '2.0.2' );
 define( 'SENSEI_COURSE_PROGRESS_PLUGIN_FILE', __FILE__ );
 define( 'SENSEI_COURSE_PROGRESS_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 
-require_once dirname( __FILE__ ) . '/includes/class-sensei-course-progress-dependency-checker.php';
-
-if ( ! Sensei_Course_Progress_Dependency_Checker::are_system_dependencies_met() ) {
-	return;
-}
-
 require_once dirname( __FILE__ ) . '/includes/class-sensei-course-progress.php';
 
 // Load the plugin after all the other plugins have loaded.

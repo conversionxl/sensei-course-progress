@@ -79,10 +79,6 @@ class Sensei_Course_Progress {
 		$instance = self::instance();
 		add_action( 'init', array( $instance, 'load_localisation' ), 0 );
 
-		if ( ! Sensei_Course_Progress_Dependency_Checker::are_plugin_dependencies_met() ) {
-			return;
-		}
-
 		/**
 		 * Returns the main instance of Sensei_Course_Progress to prevent the need to use globals.
 		 *
