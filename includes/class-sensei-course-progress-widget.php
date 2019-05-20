@@ -175,9 +175,7 @@ class Sensei_Course_Progress_Widget extends WP_Widget {
 
 						?>
 						<li class="course-progress-module">
-							<h3 class="module-title">
-								<?php echo wp_kses_post( $module_title ); ?>
-							</h3>
+							<h3 class="module-title"><?php echo wp_kses_post( $module_title ); ?></h3>
 						</li>
 						<?php
 						$old_module = $new_module;
