@@ -50,6 +50,9 @@ class Sensei_Course_Progress_Widget extends WP_Widget {
 		// If not viewing a lesson/quiz, don't display the widget
 		if( ! ( is_singular( 'lesson' ) || is_singular( 'quiz' ) || is_tax( 'module' ) ) ) return;
 
+		# badgeos bug workaround
+		wp_reset_postdata();
+
 		extract( $args );
 
 		if ( is_singular('quiz') ) {
