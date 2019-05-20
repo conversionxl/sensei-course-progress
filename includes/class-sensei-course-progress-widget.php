@@ -232,14 +232,22 @@ class Sensei_Course_Progress_Widget extends WP_Widget {
 				$lesson_title = $lesson->post_title;
 				$lesson_url = get_the_permalink( $lesson_id );
 
-				// add 'completed' class to completed lessons
-				$classes = "not-completed";
-				if( WooThemes_Sensei_Utils::user_completed_lesson( $lesson->ID, $current_user->ID ) ) {
-					$classes = "completed";
-				}
 
 				// Lesson Quiz Meta
                 $lesson_quiz_id = absint( Sensei()->lesson->lesson_quizzes( $lesson_id ) );
+
+				// add 'completed' class to completed lessons
+				$classes = "not-completed";
+
+				if( WooThemes_Sensei_Utils::user_completed_lesson( $lesson->ID, $current_user->ID ) ) {
+
+					$quiz_passmark = intval( get_post_meta( $lesson_quiz_id, '_quiz_passmark', true ) );
+
+					if ( intval( Sensei_Quiz::get_user_quiz_grade( $lesson_id, $current_user->ID ) ) >= $quiz_passmark ) {
+						$classes = "completed";
+					}
+
+				}
 
 				// add 'current' class on the current lesson/quiz
 				if( ! is_tax( 'module' ) && ( $lesson_id === $post->ID || $lesson_quiz_id === $post->ID ) ) {
