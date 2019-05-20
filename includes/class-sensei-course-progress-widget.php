@@ -85,126 +85,32 @@ class Sensei_Course_Progress_Widget extends WP_Widget {
 		$lesson_module = '';
 		$lesson_array = array();
 
-		if ( $lesson_course_id || 0 < $current_lesson_id ) {
-			// get an array of lessons in the module if there is one
-			if( isset( Sensei()->modules ) && 0 < $current_lesson_id && has_term( '', Sensei()->modules->taxonomy, $current_lesson_id ) ) {
-				// Get all modules
-    			$course_modules = Sensei()->modules->get_course_modules( $lesson_course_id );
-				$lesson_module = Sensei()->modules->get_lesson_module( $current_lesson_id );
-				$in_module = true;
+		/**
+		 * Simplify for CXL Institute.
+		 *
+		 * @see https://github.com/woocommerce/sensei-course-progress/issues/61
+		 */
+		if ( $lesson_course_id ) {
 
-				// Get an array of module ids.
-				$course_module_ids = array();
+			$course_modules = Sensei()->modules->get_course_modules( $lesson_course_id );
+
+			if ( ! empty( $course_modules ) ) {
+
 				foreach ( $course_modules as $module ) {
-					$course_module_ids[] = $module->term_id;
+					$lesson_array = array_merge( $lesson_array, Sensei()->modules->get_lessons( $lesson_course_id, $module->term_id ) );
 				}
 
-				// Display all modules
-				if ( 'on' === $allmodules ) {
-					foreach ($course_modules as $module) {
-						// get all lessons in the module
-						$args = array(
-							'post_type' => 'lesson',
-							'post_status' => 'publish',
-							'posts_per_page' => -1,
-							'meta_query' => array(
-								array(
-									'key' => '_lesson_course',
-									'value' => absint( $lesson_course_id ),
-									'compare' => '='
-								)
-							),
-							'tax_query' => array(
-								array(
-									'taxonomy' => Sensei()->modules->taxonomy,
-									'field' => 'id',
-									'terms' => absint( $module->term_id )
-								)
-							),
-							'meta_key' => '_order_module_' . intval( $module->term_id ),
-							'orderby' => 'meta_value_num date',
-							'order' => 'ASC'
-						);
-						$lesson_array = array_merge( $lesson_array, get_posts( $args) );
-					}
-
-					// Get all lessons in the course that are not in any of the
-					// course's modules.
-					$args = array(
-						'post_type' => 'lesson',
-						'post_status' => 'publish',
-						'posts_per_page' => -1,
-						'meta_query' => array(
-							array(
-								'key' => '_lesson_course',
-								'value' => absint( $lesson_course_id ),
-								'compare' => '='
-							)
-						),
-						'tax_query' => array(
-							array(
-								'taxonomy' => Sensei()->modules->taxonomy,
-								'field'    => 'id',
-								'terms'    => $course_module_ids,
-								'operator' => 'NOT IN',
-							)
-						),
-						'meta_key' => '_order_' . intval( $lesson_course_id ),
-						'orderby' => 'meta_value_num date',
-						'order' => 'ASC'
-					);
-					$lesson_array = array_merge( $lesson_array, get_posts( $args) );
-				} else {
-					// Only display current module
-			    	// get all lessons in the current module
-					$args = array(
-						'post_type' => 'lesson',
-						'post_status' => 'publish',
-						'posts_per_page' => -1,
-						'meta_query' => array(
-							array(
-								'key' => '_lesson_course',
-								'value' => absint( $lesson_course_id ),
-								'compare' => '='
-							)
-						),
-					);
-
-					if ( ! empty( $lesson_module ) && in_array( $lesson_module->term_id, $course_module_ids ) ) {
-						$args['tax_query'] = array(
-							array(
-								'taxonomy' => Sensei()->modules->taxonomy,
-								'field'    => 'id',
-								'terms'    => intval( $lesson_module->term_id ),
-							),
-						);
-						$args['meta_key']  = '_order_module_' . absint( $lesson_module->term_id );
-						$args['orderby']   = 'meta_value_num date';
-						$args['order']     = 'ASC';
-					} else {
-						$args['tax_query'] = array(
-							array(
-								'taxonomy' => Sensei()->modules->taxonomy,
-								'field'    => 'id',
-								'terms'    => $course_module_ids,
-								'operator' => 'NOT IN',
-							),
-						);
-						$args['meta_key']  = '_order_' . absint( $lesson_course_id );
-						$args['orderby']   = 'meta_value_num date';
-						$args['order']     = 'ASC';
-					}
-
-					$lesson_array = get_posts( $args );
-				}
 			} else {
-				// if modules are not loaded, get all lessons in the course.
 				$lesson_array = Sensei()->course->course_lessons( $lesson_course_id );
 			}
+
 		}
 
-		echo wp_kses_post( $before_widget );
-    ?>
+		/**
+		 * Output.
+		 */
+		echo $before_widget;
+	?>
 
 		<header>
 			<h2 class="course-title"><a href="<?php echo esc_url( $course_url ); ?>"><?php echo $course_title; ?></a></h2>
