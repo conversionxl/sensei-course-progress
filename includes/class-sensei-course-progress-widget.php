@@ -48,21 +48,26 @@ class Sensei_Course_Progress_Widget extends WP_Widget {
 		}
 
 		// If not viewing a lesson/quiz, don't display the widget
-		if( ! ( is_singular( 'lesson' ) || is_singular( 'quiz' ) || is_tax( 'module' ) ) ) return;
+		if( ! ( is_singular( array( 'course', 'lesson', 'quiz' ) ) || is_tax( 'module' ) ) ) return;
 
 		# badgeos bug workaround
 		wp_reset_postdata();
 
 		extract( $args );
 
+		// course has no current lesson
+		$current_lesson_id = null;
+
 		if ( is_singular('quiz') ) {
 			$current_lesson_id = absint( get_post_meta( $post->ID, '_quiz_lesson', true ) );
-		} else {
+		}
+
+		if ( is_singular('lesson') ) {
 			$current_lesson_id = $post->ID;
 		}
 
 		// get the course for the current lesson/quiz
-		$lesson_course_id = absint( get_post_meta( $current_lesson_id, '_lesson_course', true ) );
+		$lesson_course_id = is_singular( 'course' ) ? $post->ID : absint( get_post_meta( $current_lesson_id, '_lesson_course', true ) );
 
 		// Check if the user is taking the course
 		$is_user_taking_course = WooThemes_Sensei_Utils::user_started_course( $lesson_course_id, $current_user->ID );
@@ -80,9 +85,9 @@ class Sensei_Course_Progress_Widget extends WP_Widget {
 		$lesson_module = '';
 		$lesson_array = array();
 
-		if ( 0 < $current_lesson_id ) {
+		if ( $lesson_course_id || 0 < $current_lesson_id ) {
 			// get an array of lessons in the module if there is one
-			if( isset( Sensei()->modules ) ) {
+			if( isset( Sensei()->modules ) && 0 < $current_lesson_id && has_term( '', Sensei()->modules->taxonomy, $current_lesson_id ) ) {
 				// Get all modules
     			$course_modules = Sensei()->modules->get_course_modules( $lesson_course_id );
 				$lesson_module = Sensei()->modules->get_lesson_module( $current_lesson_id );
