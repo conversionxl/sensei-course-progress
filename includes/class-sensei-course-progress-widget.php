@@ -110,13 +110,7 @@ class Sensei_Course_Progress_Widget extends WP_Widget {
 		 * Output.
 		 */
 		echo $before_widget;
-	?>
 
-		<header>
-			<h2 class="course-title"><a href="<?php echo esc_url( $course_url ); ?>"><?php echo $course_title; ?></a></h2>
-		</header>
-
-		<?php
 		$nav_array = sensei_get_prev_next_lessons( $current_lesson_id );
 		if ( isset( $nav_array['previous'] ) || isset( $nav_array['next'] ) ) { ?>
 
@@ -158,28 +152,6 @@ class Sensei_Course_Progress_Widget extends WP_Widget {
 				// add 'current' class on the current lesson/quiz
 				if( ! is_tax( 'module' ) && ( $lesson_id === $post->ID || $lesson_quiz_id === $post->ID ) ) {
 					$classes .= " current";
-				}
-
-				if ( isset( Sensei()->modules ) ) {
-					$new_module = Sensei()->modules->get_lesson_module( $lesson_id );
-
-					// Note that if there are no modules, all the modules for
-					// the lessons will == false and so no module header will
-					// be displayed here.
-					if ( $old_module != $new_module ) {
-						if ( $new_module ) {
-							$module_title = $this->get_module_title_content( $new_module );
-						} else {
-							$module_title = esc_html( __( 'Other Lessons', 'sensei-course-progress' ) );
-						}
-
-						?>
-						<li class="course-progress-module">
-							<h3 class="module-title"><?php echo wp_kses_post( $module_title ); ?></h3>
-						</li>
-						<?php
-						$old_module = $new_module;
-					}
 				}
 
 				?>
