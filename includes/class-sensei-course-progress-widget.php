@@ -110,16 +110,21 @@ class Sensei_Course_Progress_Widget extends WP_Widget {
 		 * Output.
 		 */
 		echo $before_widget;
+		?>
 
-		$nav_array = sensei_get_prev_next_lessons( $current_lesson_id );
-		if ( isset( $nav_array['previous'] ) || isset( $nav_array['next'] ) ) { ?>
+        <?php if ( is_singular( 'lesson' ) ) : ?>
 
-			<ul class="course-progress-navigation">
-				<?php if ( isset( $nav_array['previous'] ) ) { ?><li class="prev"><a href="<?php echo esc_url( $nav_array['previous']['url'] ); ?>" title="<?php echo esc_attr( $nav_array['previous']['name'] ); ?>"><span><?php esc_html_e( 'Previous', 'sensei-course-progress' ); ?></span></a></li><?php } ?>
-				<?php if ( isset( $nav_array['next'] ) ) { ?><li class="next"><a href="<?php echo esc_url( $nav_array['next']['url'] ); ?>" title="<?php echo esc_attr( $nav_array['next']['name'] ); ?>"><span><?php esc_html_e( 'Next', 'sensei-course-progress' ); ?></span></a></li><?php } ?>
-			</ul>
+            <header>
+                <p class="course-title"><a href="<?php echo esc_url( $course_url ); ?>"><?php echo $course_title; ?></a></p>
+            </header>
 
-		<?php } ?>
+        <?php elseif ( is_singular( 'course' ) ) :  ?>
+
+            <header>
+                <p class="course-title">Lessons</p>
+            </header>
+
+        <?php endif; ?>
 
 		<ul class="course-progress-lessons">
 
@@ -167,6 +172,17 @@ class Sensei_Course_Progress_Widget extends WP_Widget {
 			<?php } ?>
 
 		</ul>
+
+        <?php
+        $nav_array = sensei_get_prev_next_lessons( $current_lesson_id );
+        if ( isset( $nav_array['previous'] ) || isset( $nav_array['next'] ) ) { ?>
+
+            <div class="course-progress-navigation">
+                <?php if ( isset( $nav_array['previous'] ) ) { ?><div class="prev"><a href="<?php echo esc_url( $nav_array['previous']['url'] ); ?>" title="<?php echo esc_attr( $nav_array['previous']['name'] ); ?>"><span>Previous</span></a></div><?php } ?>
+                <?php if ( isset( $nav_array['next'] ) ) { ?><div class="next"><a href="<?php echo esc_url( $nav_array['next']['url'] ); ?>" title="<?php echo esc_attr( $nav_array['next']['name'] ); ?>"><span>Next</span></a></div><?php } ?>
+            </div>
+
+        <?php } ?>
 
 		<?php echo wp_kses_post( $after_widget );
 	}
