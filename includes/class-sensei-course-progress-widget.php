@@ -9,6 +9,8 @@
  * @extends 	WC_Widget
  */
 
+use ConversionXL\Institute\Theme\Integrations;
+
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 class Sensei_Course_Progress_Widget extends WP_Widget {
@@ -112,76 +114,50 @@ class Sensei_Course_Progress_Widget extends WP_Widget {
 		echo $before_widget;
 		?>
 
-        <?php if ( is_singular( 'lesson' ) ) : ?>
+		<?php if ( is_singular( [ 'lesson', 'quiz' ] ) ) : ?>
 
-            <header>
-                <p class="course-title"><a href="<?php echo esc_url( $course_url ); ?>"><?php echo $course_title; ?></a></p>
-            </header>
+			<?php if ( is_singular( 'lesson' ) ) : ?>
+				<?php do_action( 'sensei_single_lesson_content_inside_after' ); ?>
+			<?php endif; ?>
 
-        <?php elseif ( is_singular( 'course' ) ) :  ?>
+			<label>Course</label>
+			<h3 class="widget-title">
+				<a href="<?php echo esc_url( $course_url ); ?>"><?php echo $course_title; ?></a>
+			</h3>
 
-            <header>
-                <p class="course-title">Lessons</p>
-            </header>
+			<?php if ( is_singular( 'lesson' ) ) : ?>
+				<section class="course-meta">
+					<?php cxli( 'theme' )->get_integration_instance( Integrations\Sensei::class )->display_sensei_course_progress_bar( $lesson_course_id ); ?>
+				</section>
+			<?php endif; ?>
+		<?php endif; ?>
 
-        <?php endif; ?>
+		<?php if ( is_singular( 'course' ) ) : ?>
+			<label>Lessons</label>
+		<?php endif; ?>
 
-		<ul class="course-progress-lessons">
+		<?php
+		foreach( $lesson_array as $post ) {
 
-			<?php
+			setup_postdata( $post );
 
-			$old_module = false;
+			hybrid_get_content_template();
 
-			foreach( $lesson_array as $lesson ) {
-				$lesson_id = absint( $lesson->ID );
-				$lesson_title = $lesson->post_title;
-				$lesson_url = get_the_permalink( $lesson_id );
+			wp_reset_postdata();
 
+		}
 
-				// Lesson Quiz Meta
-                $lesson_quiz_id = absint( Sensei()->lesson->lesson_quizzes( $lesson_id ) );
-
-				// add 'completed' class to completed lessons
-				$classes = "not-completed";
-
-				if( WooThemes_Sensei_Utils::user_completed_lesson( $lesson->ID, $current_user->ID ) ) {
-
-					$quiz_passmark = intval( get_post_meta( $lesson_quiz_id, '_quiz_passmark', true ) );
-
-					if ( intval( Sensei_Quiz::get_user_quiz_grade( $lesson_id, $current_user->ID ) ) >= $quiz_passmark ) {
-						$classes = "completed";
-					}
-
-				}
-
-				// add 'current' class on the current lesson/quiz
-				if( ! is_tax( 'module' ) && ( $lesson_id === $post->ID || $lesson_quiz_id === $post->ID ) ) {
-					$classes .= " current";
-				}
-
-				?>
-
-				<li class="course-progress-lesson <?php echo esc_attr( $classes ); ?>">
-					<?php if( ! is_tax( 'module' ) && ( $lesson->ID === $post->ID || $lesson_quiz_id === $post->ID ) ) {
-						echo '<span>' . esc_html( $lesson_title ) . '</span>';
-					} else {
-						echo '<a href="' . esc_url( $lesson_url ) . '">' . esc_html( $lesson_title ) . '</a>';
-					} ?>
-				</li>
-
-			<?php } ?>
-
-		</ul>
-
-        <?php
         $nav_array = sensei_get_prev_next_lessons( $current_lesson_id );
         if ( isset( $nav_array['previous'] ) || isset( $nav_array['next'] ) ) { ?>
 
-            <div class="course-progress-navigation">
-                <?php if ( isset( $nav_array['previous'] ) ) { ?><div class="prev"><a href="<?php echo esc_url( $nav_array['previous']['url'] ); ?>" title="<?php echo esc_attr( $nav_array['previous']['name'] ); ?>"><span>Previous</span></a></div><?php } ?>
-                <?php if ( isset( $nav_array['next'] ) ) { ?><div class="next"><a href="<?php echo esc_url( $nav_array['next']['url'] ); ?>" title="<?php echo esc_attr( $nav_array['next']['name'] ); ?>"><span>Next</span></a></div><?php } ?>
-            </div>
-
+            <p class="course-progress-navigation">
+                <?php if ( isset( $nav_array['previous'] ) ) : ?>
+	                <vaadin-button theme="contrast" onclick="window.location.href='<?php echo esc_url( $nav_array['previous']['url'] ); ?>'" tabindex="0" role="button">Prev<iron-icon slot="prefix" icon="lumo:arrow-left"></iron-icon></vaadin-button>
+		        <?php endif; ?>
+                <?php if ( isset( $nav_array['next'] ) ) : ?>
+	                <vaadin-button theme="secondary" onclick="window.location.href='<?php echo esc_url( $nav_array['next']['url'] ); ?>'" tabindex="0" role="button">Next<iron-icon slot="suffix" icon="lumo:arrow-right"></iron-icon></vaadin-button>
+		        <?php endif; ?>
+            </p>
         <?php } ?>
 
 		<?php echo wp_kses_post( $after_widget );
