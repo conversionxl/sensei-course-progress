@@ -116,10 +116,6 @@ class Sensei_Course_Progress_Widget extends WP_Widget {
 
 		<?php if ( is_singular( [ 'lesson', 'quiz' ] ) ) : ?>
 
-			<?php if ( is_singular( 'lesson' ) ) : ?>
-				<?php do_action( 'sensei_single_lesson_content_inside_after' ); ?>
-			<?php endif; ?>
-
 			<label>Course</label>
 			<h3 class="widget-title">
 				<a href="<?php echo esc_url( $course_url ); ?>"><?php echo $course_title; ?></a>
