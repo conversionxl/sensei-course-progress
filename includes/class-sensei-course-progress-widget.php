@@ -148,10 +148,10 @@ class Sensei_Course_Progress_Widget extends WP_Widget {
 
             <p class="course-progress-navigation">
                 <?php if ( isset( $nav_array['previous'] ) ) : ?>
-	                <vaadin-button theme="contrast" onclick="window.location.href='<?php echo esc_url( $nav_array['previous']['url'] ); ?>'" tabindex="0" role="button">Prev<iron-icon slot="prefix" icon="lumo:arrow-left"></iron-icon></vaadin-button>
+	                <vaadin-button theme="contrast" onclick="window.location.href='<?php echo esc_url( $nav_array['previous']['url'] ); ?>'" tabindex="0" role="button">Prev<vaadin-icon slot="prefix" icon="lumo:arrow-left"></vaadin-icon></vaadin-button>
 		        <?php endif; ?>
                 <?php if ( isset( $nav_array['next'] ) ) : ?>
-	                <vaadin-button theme="secondary" onclick="window.location.href='<?php echo esc_url( $nav_array['next']['url'] ); ?>'" tabindex="0" role="button">Next<iron-icon slot="suffix" icon="lumo:arrow-right"></iron-icon></vaadin-button>
+	                <vaadin-button theme="secondary" onclick="window.location.href='<?php echo esc_url( $nav_array['next']['url'] ); ?>'" tabindex="0" role="button">Next<vaadin-icon slot="suffix" icon="lumo:arrow-right"></vaadin-icon></vaadin-button>
 		        <?php endif; ?>
             </p>
         <?php } ?>
