@@ -122,6 +122,7 @@ class Sensei_Course_Progress_Widget extends WP_Widget {
 				<section class="course-meta">
 					<?php cxli( 'theme' )->get_integration_instance( Integrations\Sensei::class )->display_sensei_course_progress_bar( $lesson_course_id ); ?>
 				</section>
+				<hr>
 			<?php endif; ?>
 		<?php endif; ?>
 
@@ -130,7 +131,37 @@ class Sensei_Course_Progress_Widget extends WP_Widget {
 		<?php endif; ?>
 
 		<?php
+
+		$display_modules_in_lesson_sidebar = get_post_meta( $lesson_course_id, 'cxl_display_modules_in_lesson_sidebar', true );
+		$old_module                        = false;
+
 		foreach( $lesson_array as $post ) {
+
+			/*
+			 * Display module titles upon choice set in course meta.
+			 * Used part of the original implementation that is in master branch.
+			 *
+			 * @since 2024.08.29
+			 * @see https://github.com/woocommerce/sensei-course-progress/blob/150c4472acf3555eb5f870fd17daa25fe311a8f3/includes/class-sensei-course-progress-widget.php#L247
+			 */
+			if ( $display_modules_in_lesson_sidebar && isset( Sensei()->modules ) ) {
+				$new_module = Sensei()->modules->get_lesson_module( $post->ID );
+
+				if ( $old_module != $new_module ) {
+					if ( $new_module ) {
+						$module_title = $this->get_module_title_content( $new_module );
+					} else {
+						$module_title = esc_html( __( 'Other Lessons', 'sensei-course-progress' ) );
+					}
+
+					?>
+					<h5 class="module-title">
+						<?php echo wp_kses_post( $module_title ); ?>
+					</h5>
+					<?php
+					$old_module = $new_module;
+				}
+			}
 
 			setup_postdata( $post );
 
